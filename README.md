@@ -47,6 +47,29 @@ exception/    → custom exceptions + @RestControllerAdvice global handler
 | GET | `/api/v1/products/{id}/items` | ADMIN or USER |
 | POST | `/api/v1/products/{id}/items` | ADMIN |
 
+## Download project from GitHub
+
+Option 1 — git clone (recommended, keeps version history and lets you pull future updates)
+
+Install Git if you don't have it: https://git-scm.com/download/win — run the installer, defaults are fine
+Verify it installed:
+powershell
+   git --version
+On the GitHub repo page, click the `green Code button → copy the HTTPS URL` (looks like https://github.com/<username>/<repo-name>.git)
+Clone it:
+powershell
+   cd $env:USERPROFILE\Downloads
+   git clone https://github.com/<username>/<repo-name>.git
+   cd <repo-name>
+
+Replace <username>/<repo-name> with the actual repo path. 5. If the repo is private, Git will prompt for GitHub credentials — use a Personal Access Token as the password (GitHub no longer accepts your account password directly): `GitHub → Settings → Developer settings → Personal access tokens → Generate new token`, give it repo scope, copy it, paste it when Git asks for a password.
+
+Option 2 — Download ZIP (no Git required)
+
+On the GitHub repo page, click the `green Code button → Download ZIP`
+It saves to your Downloads folder as <repo-name>-main.zip
+Then extract it and import on **Eclipse IDE** as **Exiting Maven Project**.
+
 
 ## Running Locally
 
@@ -186,7 +209,6 @@ All config is environment-variable driven (see `application.yml`):
 | `DB_URL` | `jdbc:mysql://localhost:3306/productdb?allowPublicKeyRetrieval=true&useSSL=false` | JDBC URL |
 | `DB_USERNAME` / `DB_PASSWORD` | `root` / `root` | DB credentials |
 | `DDL_AUTO` | `update` | Hibernate schema strategy |
-| `JWT_SECRET` | (dev default, **override in prod**) | HS256 signing key |
 | `JWT_ACCESS_EXPIRATION_MS` | `900000` (15 min) | Access token TTL |
 | `JWT_REFRESH_EXPIRATION_MS` | `604800000` (7 days) | Refresh token TTL |
 
