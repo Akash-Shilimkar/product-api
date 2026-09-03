@@ -30,60 +30,60 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ItemServiceImplTest {
 
-    @Mock
-    private ItemRepository itemRepository;
+	@Mock
+	private ItemRepository itemRepository;
 
-    @Mock
-    private ProductRepository productRepository;
+	@Mock
+	private ProductRepository productRepository;
 
-    @InjectMocks
-    private ItemServiceImpl itemService;
+	@InjectMocks
+	private ItemServiceImpl itemService;
 
-    private Product product;
-    private Item item;
+	private Product product;
+	private Item item;
 
-    @BeforeEach
-    void setUp() {
-        product = Product.builder().id(1).productName("Keyboard").build();
-        item = Item.builder().id(10).product(product).quantity(5).build();
-    }
+	@BeforeEach
+	void setUp() {
+		product = Product.builder().id(1).productName("Keyboard").build();
+		item = Item.builder().id(10).product(product).quantity(5).build();
+	}
 
-    @Test
-    void addItem_savesItem_whenProductExists() {
-        when(productRepository.findById(1)).thenReturn(Optional.of(product));
-        when(itemRepository.save(any(Item.class))).thenReturn(item);
+	@Test
+	void addItem_savesItem_whenProductExists() {
+		when(productRepository.findById(1)).thenReturn(Optional.of(product));
+		when(itemRepository.save(any(Item.class))).thenReturn(item);
 
-        ItemResponse response = itemService.addItem(1, new ItemRequest(5));
+		ItemResponse response = itemService.addItem(1, new ItemRequest(5));
 
-        assertThat(response.getProductId()).isEqualTo(1);
-        assertThat(response.getQuantity()).isEqualTo(5);
-    }
+		assertThat(response.getProductId()).isEqualTo(1);
+		assertThat(response.getQuantity()).isEqualTo(5);
+	}
 
-    @Test
-    void addItem_throwsResourceNotFound_whenProductMissing() {
-        when(productRepository.findById(99)).thenReturn(Optional.empty());
+	@Test
+	void addItem_throwsResourceNotFound_whenProductMissing() {
+		when(productRepository.findById(99)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> itemService.addItem(99, new ItemRequest(3)))
-                .isInstanceOf(ResourceNotFoundException.class);
-    }
+		assertThatThrownBy(() -> itemService.addItem(99, new ItemRequest(3)))
+				.isInstanceOf(ResourceNotFoundException.class);
+	}
 
-    @Test
-    void getItemsByProduct_returnsPagedItems() {
-        when(productRepository.existsById(1)).thenReturn(true);
-        Page<Item> page = new PageImpl<>(List.of(item), PageRequest.of(0, 20), 1);
-        when(itemRepository.findByProductId(eq(1), any(Pageable.class))).thenReturn(page);
+	@Test
+	void getItemsByProduct_returnsPagedItems() {
+		when(productRepository.existsById(1)).thenReturn(true);
+		Page<Item> page = new PageImpl<>(List.of(item), PageRequest.of(0, 20), 1);
+		when(itemRepository.findByProductId(eq(1), any(Pageable.class))).thenReturn(page);
 
-        var result = itemService.getItemsByProduct(1, 0, 20);
+		var result = itemService.getItemsByProduct(1, 0, 20);
 
-        assertThat(result.getContent()).hasSize(1);
-        assertThat(result.getContent().get(0).getQuantity()).isEqualTo(5);
-    }
+		assertThat(result.getContent()).hasSize(1);
+		assertThat(result.getContent().get(0).getQuantity()).isEqualTo(5);
+	}
 
-    @Test
-    void getItemsByProduct_throwsResourceNotFound_whenProductMissing() {
-        when(productRepository.existsById(42)).thenReturn(false);
+	@Test
+	void getItemsByProduct_throwsResourceNotFound_whenProductMissing() {
+		when(productRepository.existsById(42)).thenReturn(false);
 
-        assertThatThrownBy(() -> itemService.getItemsByProduct(42, 0, 20))
-                .isInstanceOf(ResourceNotFoundException.class);
-    }
+		assertThatThrownBy(() -> itemService.getItemsByProduct(42, 0, 20))
+				.isInstanceOf(ResourceNotFoundException.class);
+	}
 }

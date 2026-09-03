@@ -14,10 +14,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class ProductResponse {
-    private Integer id;
-    private String productName;
-    private String createdBy;
-    private LocalDateTime createdOn;
-    private String modifiedBy;
-    private LocalDateTime modifiedOn;
+	private Integer id;
+	private String productName;
+	private String createdBy;
+	private LocalDateTime createdOn;
+	private String modifiedBy;
+	private LocalDateTime modifiedOn;
 }

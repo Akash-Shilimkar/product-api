@@ -24,247 +24,168 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class ProductControllerTest {
 
-    @Mock
-    private ProductService productService;
+	@Mock
+	private ProductService productService;
 
-    @Mock
-    private ItemService itemService;
+	@Mock
+	private ItemService itemService;
 
-    @Mock
-    private Authentication authentication;
+	@Mock
+	private Authentication authentication;
 
-    @InjectMocks
-    private ProductController productController;
+	@InjectMocks
+	private ProductController productController;
 
-    private ProductResponse productResponse;
+	private ProductResponse productResponse;
 
-    @BeforeEach
-    void setUp() {
+	@BeforeEach
+	void setUp() {
 
-        productResponse = new ProductResponse();
+		productResponse = new ProductResponse();
 
-        productResponse.setId(1);
-        productResponse.setProductName("Mechanical Keyboard");
-        productResponse.setCreatedBy("admin");
-        productResponse.setModifiedBy("admin");
-    }
+		productResponse.setId(1);
+		productResponse.setProductName("Mechanical Keyboard");
+		productResponse.setCreatedBy("admin");
+		productResponse.setModifiedBy("admin");
+	}
 
-    // ---------------------------------------------------------
-    // CREATE PRODUCT
-    // ---------------------------------------------------------
+	// ---------------------------------------------------------
+	// CREATE PRODUCT
+	// ---------------------------------------------------------
 
-    @Test
-    void createProduct_shouldReturnCreated() {
+	@Test
+	void createProduct_shouldReturnCreated() {
 
-        ProductRequest request =
-                new ProductRequest("Mechanical Keyboard");
+		ProductRequest request = new ProductRequest("Mechanical Keyboard");
 
-        when(authentication.getName())
-                .thenReturn("admin");
+		when(authentication.getName()).thenReturn("admin");
 
-        when(productService.create(request, "admin"))
-                .thenReturn(productResponse);
+		when(productService.create(request, "admin")).thenReturn(productResponse);
 
-        ResponseEntity<ProductResponse> response =
-                productController.create(request, authentication);
+		ResponseEntity<ProductResponse> response = productController.create(request, authentication);
 
-        assertEquals(
-                HttpStatus.CREATED,
-                response.getStatusCode()
-        );
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
-        assertNotNull(response.getBody());
+		assertNotNull(response.getBody());
 
-        assertEquals(
-                1,
-                response.getBody().getId()
-        );
+		assertEquals(1, response.getBody().getId());
 
-        assertEquals(
-                "Mechanical Keyboard",
-                response.getBody().getProductName()
-        );
+		assertEquals("Mechanical Keyboard", response.getBody().getProductName());
 
-        verify(authentication)
-                .getName();
+		verify(authentication).getName();
 
-        verify(productService)
-                .create(request, "admin");
-    }
+		verify(productService).create(request, "admin");
+	}
 
-    // ---------------------------------------------------------
-    // GET PRODUCT BY ID
-    // ---------------------------------------------------------
+	// ---------------------------------------------------------
+	// GET PRODUCT BY ID
+	// ---------------------------------------------------------
 
-    @Test
-    void getProductById_shouldReturnProduct() {
+	@Test
+	void getProductById_shouldReturnProduct() {
 
-        when(productService.getById(1))
-                .thenReturn(productResponse);
+		when(productService.getById(1)).thenReturn(productResponse);
 
-        ResponseEntity<ProductResponse> response =
-                productController.getById(1);
+		ResponseEntity<ProductResponse> response = productController.getById(1);
 
-        assertEquals(
-                HttpStatus.OK,
-                response.getStatusCode()
-        );
+		assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        assertNotNull(response.getBody());
+		assertNotNull(response.getBody());
 
-        assertEquals(
-                1,
-                response.getBody().getId()
-        );
+		assertEquals(1, response.getBody().getId());
 
-        assertEquals(
-                "Mechanical Keyboard",
-                response.getBody().getProductName()
-        );
+		assertEquals("Mechanical Keyboard", response.getBody().getProductName());
 
-        verify(productService)
-                .getById(1);
-    }
-
-    // ---------------------------------------------------------
-    // GET ALL PRODUCTS
-    // ---------------------------------------------------------
+		verify(productService).getById(1);
+	}
 
-    @Test
-    void getAllProducts_shouldReturnPagedResponse() {
+	// ---------------------------------------------------------
+	// GET ALL PRODUCTS
+	// ---------------------------------------------------------
 
-        PagedResponse<ProductResponse> pagedResponse =
-                new PagedResponse<>();
+	@Test
+	void getAllProducts_shouldReturnPagedResponse() {
 
-        when(productService.getAll(0, 20, null))
-                .thenReturn(pagedResponse);
-
-        ResponseEntity<PagedResponse<ProductResponse>> response =
-                productController.getAll(0, 20, null);
-
-        assertEquals(
-                HttpStatus.OK,
-                response.getStatusCode()
-        );
-
-        assertNotNull(response.getBody());
+		PagedResponse<ProductResponse> pagedResponse = new PagedResponse<>();
 
-        verify(productService)
-                .getAll(0, 20, null);
-    }
+		when(productService.getAll(0, 20, null)).thenReturn(pagedResponse);
 
-    // ---------------------------------------------------------
-    // GET ALL PRODUCTS WITH SEARCH
-    // ---------------------------------------------------------
+		ResponseEntity<PagedResponse<ProductResponse>> response = productController.getAll(0, 20, null);
 
-    @Test
-    void getAllProducts_withSearch_shouldReturnPagedResponse() {
+		assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        PagedResponse<ProductResponse> pagedResponse =
-                new PagedResponse<>();
+		assertNotNull(response.getBody());
 
-        when(productService.getAll(
-                0,
-                10,
-                "Keyboard"
-        )).thenReturn(pagedResponse);
+		verify(productService).getAll(0, 20, null);
+	}
 
-        ResponseEntity<PagedResponse<ProductResponse>> response =
-                productController.getAll(
-                        0,
-                        10,
-                        "Keyboard"
-                );
+	// ---------------------------------------------------------
+	// GET ALL PRODUCTS WITH SEARCH
+	// ---------------------------------------------------------
 
-        assertEquals(
-                HttpStatus.OK,
-                response.getStatusCode()
-        );
+	@Test
+	void getAllProducts_withSearch_shouldReturnPagedResponse() {
 
-        assertNotNull(response.getBody());
+		PagedResponse<ProductResponse> pagedResponse = new PagedResponse<>();
 
-        verify(productService)
-                .getAll(0, 10, "Keyboard");
-    }
+		when(productService.getAll(0, 10, "Keyboard")).thenReturn(pagedResponse);
 
-    // ---------------------------------------------------------
-    // UPDATE PRODUCT
-    // ---------------------------------------------------------
+		ResponseEntity<PagedResponse<ProductResponse>> response = productController.getAll(0, 10, "Keyboard");
 
-    @Test
-    void updateProduct_shouldReturnUpdatedProduct() {
+		assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        ProductRequest request =
-                new ProductRequest("Mechanical Keyboard RGB");
+		assertNotNull(response.getBody());
 
-        ProductResponse updatedResponse =
-                new ProductResponse();
+		verify(productService).getAll(0, 10, "Keyboard");
+	}
 
-        updatedResponse.setId(1);
-        updatedResponse.setProductName(
-                "Mechanical Keyboard RGB"
-        );
-        updatedResponse.setModifiedBy("admin");
+	// ---------------------------------------------------------
+	// UPDATE PRODUCT
+	// ---------------------------------------------------------
 
-        when(authentication.getName())
-                .thenReturn("admin");
+	@Test
+	void updateProduct_shouldReturnUpdatedProduct() {
 
-        when(productService.update(
-                1,
-                request,
-                "admin"
-        )).thenReturn(updatedResponse);
+		ProductRequest request = new ProductRequest("Mechanical Keyboard RGB");
 
-        ResponseEntity<ProductResponse> response =
-                productController.update(
-                        1,
-                        request,
-                        authentication
-                );
+		ProductResponse updatedResponse = new ProductResponse();
 
-        assertEquals(
-                HttpStatus.OK,
-                response.getStatusCode()
-        );
+		updatedResponse.setId(1);
+		updatedResponse.setProductName("Mechanical Keyboard RGB");
+		updatedResponse.setModifiedBy("admin");
 
-        assertNotNull(response.getBody());
+		when(authentication.getName()).thenReturn("admin");
 
-        assertEquals(
-                1,
-                response.getBody().getId()
-        );
+		when(productService.update(1, request, "admin")).thenReturn(updatedResponse);
 
-        assertEquals(
-                "Mechanical Keyboard RGB",
-                response.getBody().getProductName()
-        );
+		ResponseEntity<ProductResponse> response = productController.update(1, request, authentication);
 
-        verify(productService)
-                .update(1, request, "admin");
-    }
+		assertEquals(HttpStatus.OK, response.getStatusCode());
 
-    // ---------------------------------------------------------
-    // DELETE PRODUCT
-    // ---------------------------------------------------------
+		assertNotNull(response.getBody());
 
-    @Test
-    void deleteProduct_shouldReturnNoContent() {
+		assertEquals(1, response.getBody().getId());
 
-        doNothing()
-                .when(productService)
-                .delete(1);
+		assertEquals("Mechanical Keyboard RGB", response.getBody().getProductName());
 
-        ResponseEntity<Void> response =
-                productController.delete(1);
+		verify(productService).update(1, request, "admin");
+	}
 
-        assertEquals(
-                HttpStatus.NO_CONTENT,
-                response.getStatusCode()
-        );
+	// ---------------------------------------------------------
+	// DELETE PRODUCT
+	// ---------------------------------------------------------
 
-        assertNull(response.getBody());
+	@Test
+	void deleteProduct_shouldReturnNoContent() {
 
-        verify(productService)
-                .delete(1);
-    }
+		doNothing().when(productService).delete(1);
+
+		ResponseEntity<Void> response = productController.delete(1);
+
+		assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+
+		assertNull(response.getBody());
+
+		verify(productService).delete(1);
+	}
 }

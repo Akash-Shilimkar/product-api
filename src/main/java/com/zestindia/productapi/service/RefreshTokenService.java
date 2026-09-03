@@ -17,34 +17,31 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class RefreshTokenService {
 
-    private final RefreshTokenRepository refreshTokenRepository;
+	private final RefreshTokenRepository refreshTokenRepository;
 
-    @Value("${app.jwt.refresh-token-expiration-ms}")
-    private long refreshTokenExpirationMs;
+	@Value("${app.jwt.refresh-token-expiration-ms}")
+	private long refreshTokenExpirationMs;
 
-    @Transactional
-    public RefreshToken createRefreshToken(User user) {
-        // Rotation: invalidate any previous refresh token for this user first.
-        refreshTokenRepository.deleteByUser(user);
+	@Transactional
+	public RefreshToken createRefreshToken(User user) {
+		// Rotation: invalidate any previous refresh token for this user first.
+		refreshTokenRepository.deleteByUser(user);
 
-        RefreshToken refreshToken = RefreshToken.builder()
-                .user(user)
-                .token(UUID.randomUUID().toString())
-                .expiryDate(Instant.now().plusMillis(refreshTokenExpirationMs))
-                .build();
+		RefreshToken refreshToken = RefreshToken.builder().user(user).token(UUID.randomUUID().toString())
+				.expiryDate(Instant.now().plusMillis(refreshTokenExpirationMs)).build();
 
-        return refreshTokenRepository.save(refreshToken);
-    }
+		return refreshTokenRepository.save(refreshToken);
+	}
 
-    public Optional<RefreshToken> findByToken(String token) {
-        return refreshTokenRepository.findByToken(token);
-    }
+	public Optional<RefreshToken> findByToken(String token) {
+		return refreshTokenRepository.findByToken(token);
+	}
 
-    public RefreshToken verifyExpiration(RefreshToken token) {
-        if (token.getExpiryDate().isBefore(Instant.now())) {
-            refreshTokenRepository.delete(token);
-            throw new TokenRefreshException(token.getToken(), "Refresh token expired. Please sign in again.");
-        }
-        return token;
-    }
+	public RefreshToken verifyExpiration(RefreshToken token) {
+		if (token.getExpiryDate().isBefore(Instant.now())) {
+			refreshTokenRepository.delete(token);
+			throw new TokenRefreshException(token.getToken(), "Refresh token expired. Please sign in again.");
+		}
+		return token;
+	}
 }

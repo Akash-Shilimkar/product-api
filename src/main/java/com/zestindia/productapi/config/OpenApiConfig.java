@@ -11,20 +11,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class OpenApiConfig {
 
-    @Bean
-    public OpenAPI productApiOpenAPI() {
-        final String schemeName = "bearerAuth";
-        return new OpenAPI()
-                .info(new Info()
-                        .title("Product API")
-                        .description("RESTful CRUD API for Products")
-                        .version("v1.0.0"))
-                .addSecurityItem(new SecurityRequirement().addList(schemeName))
-                .components(new Components()
-                        .addSecuritySchemes(schemeName, new SecurityScheme()
-                                .name(schemeName)
-                                .type(SecurityScheme.Type.HTTP)
-                                .scheme("bearer")
-                                .bearerFormat("JWT")));
-    }
+	@Bean
+	public OpenAPI productApiOpenAPI() {
+		final String schemeName = "bearerAuth";
+		return new OpenAPI()
+				.info(new Info().title("Product API").description("RESTful CRUD API for Products").version("v1.0.0"))
+				.addSecurityItem(new SecurityRequirement().addList(schemeName))
+				.components(new Components().addSecuritySchemes(schemeName, new SecurityScheme().name(schemeName)
+						.type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")));
+	}
 }

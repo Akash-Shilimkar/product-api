@@ -28,96 +28,90 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class ProductServiceImplTest {
 
-    @Mock
-    private ProductRepository productRepository;
+	@Mock
+	private ProductRepository productRepository;
 
-    @Mock
-    private AuditLogService auditLogService;
+	@Mock
+	private AuditLogService auditLogService;
 
-    @InjectMocks
-    private ProductServiceImpl productService;
+	@InjectMocks
+	private ProductServiceImpl productService;
 
-    private Product product;
+	private Product product;
 
-    @BeforeEach
-    void setUp() {
-        product = Product.builder()
-                .id(1)
-                .productName("Wireless Mouse")
-                .createdBy("admin")
-                .createdOn(LocalDateTime.now())
-                .build();
-    }
+	@BeforeEach
+	void setUp() {
+		product = Product.builder().id(1).productName("Wireless Mouse").createdBy("admin")
+				.createdOn(LocalDateTime.now()).build();
+	}
 
-    @Test
-    void create_savesProductAndReturnsResponse() {
-        when(productRepository.save(any(Product.class))).thenReturn(product);
+	@Test
+	void create_savesProductAndReturnsResponse() {
+		when(productRepository.save(any(Product.class))).thenReturn(product);
 
-        ProductResponse response = productService.create(new ProductRequest("Wireless Mouse"), "admin");
+		ProductResponse response = productService.create(new ProductRequest("Wireless Mouse"), "admin");
 
-        assertThat(response.getId()).isEqualTo(1);
-        assertThat(response.getProductName()).isEqualTo("Wireless Mouse");
-        assertThat(response.getCreatedBy()).isEqualTo("admin");
-        verify(productRepository, times(1)).save(any(Product.class));
-        verify(auditLogService, times(1)).logProductChange(eq("CREATE"), eq(1), eq("admin"));
-    }
+		assertThat(response.getId()).isEqualTo(1);
+		assertThat(response.getProductName()).isEqualTo("Wireless Mouse");
+		assertThat(response.getCreatedBy()).isEqualTo("admin");
+		verify(productRepository, times(1)).save(any(Product.class));
+		verify(auditLogService, times(1)).logProductChange(eq("CREATE"), eq(1), eq("admin"));
+	}
 
-    @Test
-    void getById_returnsProduct_whenExists() {
-        when(productRepository.findById(1)).thenReturn(Optional.of(product));
+	@Test
+	void getById_returnsProduct_whenExists() {
+		when(productRepository.findById(1)).thenReturn(Optional.of(product));
 
-        ProductResponse response = productService.getById(1);
+		ProductResponse response = productService.getById(1);
 
-        assertThat(response.getProductName()).isEqualTo("Wireless Mouse");
-    }
+		assertThat(response.getProductName()).isEqualTo("Wireless Mouse");
+	}
 
-    @Test
-    void getById_throwsResourceNotFound_whenMissing() {
-        when(productRepository.findById(99)).thenReturn(Optional.empty());
+	@Test
+	void getById_throwsResourceNotFound_whenMissing() {
+		when(productRepository.findById(99)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> productService.getById(99))
-                .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessageContaining("99");
-    }
+		assertThatThrownBy(() -> productService.getById(99)).isInstanceOf(ResourceNotFoundException.class)
+				.hasMessageContaining("99");
+	}
 
-    @Test
-    void getAll_returnsPagedResponse() {
-        Page<Product> page = new PageImpl<>(List.of(product), PageRequest.of(0, 20), 1);
-        when(productRepository.findAll(any(org.springframework.data.domain.Pageable.class))).thenReturn(page);
+	@Test
+	void getAll_returnsPagedResponse() {
+		Page<Product> page = new PageImpl<>(List.of(product), PageRequest.of(0, 20), 1);
+		when(productRepository.findAll(any(org.springframework.data.domain.Pageable.class))).thenReturn(page);
 
-        PagedResponse<ProductResponse> result = productService.getAll(0, 20, null);
+		PagedResponse<ProductResponse> result = productService.getAll(0, 20, null);
 
-        assertThat(result.getContent()).hasSize(1);
-        assertThat(result.getTotalElements()).isEqualTo(1);
-    }
+		assertThat(result.getContent()).hasSize(1);
+		assertThat(result.getTotalElements()).isEqualTo(1);
+	}
 
-    @Test
-    void update_modifiesExistingProduct() {
-        when(productRepository.findById(1)).thenReturn(Optional.of(product));
-        when(productRepository.save(any(Product.class))).thenAnswer(inv -> inv.getArgument(0));
+	@Test
+	void update_modifiesExistingProduct() {
+		when(productRepository.findById(1)).thenReturn(Optional.of(product));
+		when(productRepository.save(any(Product.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        ProductResponse response = productService.update(1, new ProductRequest("Updated Mouse"), "admin");
+		ProductResponse response = productService.update(1, new ProductRequest("Updated Mouse"), "admin");
 
-        assertThat(response.getProductName()).isEqualTo("Updated Mouse");
-        assertThat(response.getModifiedBy()).isEqualTo("admin");
-    }
+		assertThat(response.getProductName()).isEqualTo("Updated Mouse");
+		assertThat(response.getModifiedBy()).isEqualTo("admin");
+	}
 
-    @Test
-    void delete_removesProduct_whenExists() {
-        when(productRepository.findById(1)).thenReturn(Optional.of(product));
+	@Test
+	void delete_removesProduct_whenExists() {
+		when(productRepository.findById(1)).thenReturn(Optional.of(product));
 
-        productService.delete(1);
+		productService.delete(1);
 
-        verify(productRepository, times(1)).delete(product);
-    }
+		verify(productRepository, times(1)).delete(product);
+	}
 
-    @Test
-    void delete_throwsResourceNotFound_whenMissing() {
-        when(productRepository.findById(5)).thenReturn(Optional.empty());
+	@Test
+	void delete_throwsResourceNotFound_whenMissing() {
+		when(productRepository.findById(5)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> productService.delete(5))
-                .isInstanceOf(ResourceNotFoundException.class);
+		assertThatThrownBy(() -> productService.delete(5)).isInstanceOf(ResourceNotFoundException.class);
 
-        verify(productRepository, never()).delete(any());
-    }
+		verify(productRepository, never()).delete(any());
+	}
 }

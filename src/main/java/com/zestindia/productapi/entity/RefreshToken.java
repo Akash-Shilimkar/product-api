@@ -19,18 +19,18 @@ import java.util.UUID;
 @Builder
 public class RefreshToken {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
-    private User user;
+	@OneToOne
+	@JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+	private User user;
 
-    @Column(nullable = false, unique = true)
-    @Builder.Default
-    private String token = UUID.randomUUID().toString();
+	@Column(nullable = false, unique = true)
+	@Builder.Default
+	private String token = UUID.randomUUID().toString();
 
-    @Column(nullable = false)
-    private Instant expiryDate;
+	@Column(nullable = false)
+	private Instant expiryDate;
 }

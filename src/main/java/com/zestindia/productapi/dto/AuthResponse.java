@@ -12,8 +12,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class AuthResponse {
-    private String accessToken;
-    private String refreshToken;
-    @Builder.Default
-    private String tokenType = "Bearer";
+	private String accessToken;
+	private String refreshToken;
+	@Builder.Default
+	private String tokenType = "Bearer";
 }

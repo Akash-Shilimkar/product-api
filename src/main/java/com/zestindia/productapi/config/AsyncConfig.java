@@ -9,14 +9,14 @@ import java.util.concurrent.Executor;
 @Configuration
 public class AsyncConfig {
 
-    @Bean(name = "auditExecutor")
-    public Executor auditExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(2);
-        executor.setMaxPoolSize(4);
-        executor.setQueueCapacity(100);
-        executor.setThreadNamePrefix("audit-async-");
-        executor.initialize();
-        return executor;
-    }
+	@Bean(name = "auditExecutor")
+	public Executor auditExecutor() {
+		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+		executor.setCorePoolSize(2);
+		executor.setMaxPoolSize(4);
+		executor.setQueueCapacity(100);
+		executor.setThreadNamePrefix("audit-async-");
+		executor.initialize();
+		return executor;
+	}
 }

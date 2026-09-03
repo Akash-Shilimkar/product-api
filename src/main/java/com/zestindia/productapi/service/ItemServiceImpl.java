@@ -21,40 +21,34 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ItemServiceImpl implements ItemService {
 
-    private final ItemRepository itemRepository;
-    private final ProductRepository productRepository;
+	private final ItemRepository itemRepository;
+	private final ProductRepository productRepository;
 
-    @Override
-    @Transactional(readOnly = true)
-    public PagedResponse<ItemResponse> getItemsByProduct(Integer productId, int page, int size) {
-        if (!productRepository.existsById(productId)) {
-            throw new ResourceNotFoundException("Product not found with id: " + productId);
-        }
+	@Override
+	@Transactional(readOnly = true)
+	public PagedResponse<ItemResponse> getItemsByProduct(Integer productId, int page, int size) {
+		if (!productRepository.existsById(productId)) {
+			throw new ResourceNotFoundException("Product not found with id: " + productId);
+		}
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
-        Page<Item> items = itemRepository.findByProductId(productId, pageable);
-        return PagedResponse.of(items.map(this::toResponse));
-    }
+		Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+		Page<Item> items = itemRepository.findByProductId(productId, pageable);
+		return PagedResponse.of(items.map(this::toResponse));
+	}
 
-    @Override
-    public ItemResponse addItem(Integer productId, ItemRequest request) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + productId));
+	@Override
+	public ItemResponse addItem(Integer productId, ItemRequest request) {
+		Product product = productRepository.findById(productId)
+				.orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + productId));
 
-        Item item = Item.builder()
-                .product(product)
-                .quantity(request.getQuantity())
-                .build();
+		Item item = Item.builder().product(product).quantity(request.getQuantity()).build();
 
-        Item saved = itemRepository.save(item);
-        return toResponse(saved);
-    }
+		Item saved = itemRepository.save(item);
+		return toResponse(saved);
+	}
 
-    private ItemResponse toResponse(Item item) {
-        return ItemResponse.builder()
-                .id(item.getId())
-                .productId(item.getProduct().getId())
-                .quantity(item.getQuantity())
-                .build();
-    }
+	private ItemResponse toResponse(Item item) {
+		return ItemResponse.builder().id(item.getId()).productId(item.getProduct().getId()).quantity(item.getQuantity())
+				.build();
+	}
 }

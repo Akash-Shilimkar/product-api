@@ -13,7 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ItemRequest {
 
-    @NotNull(message = "quantity is required")
-    @Min(value = 0, message = "quantity must not be negative")
-    private Integer quantity;
+	@NotNull(message = "quantity is required")
+	@Min(value = 0, message = "quantity must not be negative")
+	private Integer quantity;
 }

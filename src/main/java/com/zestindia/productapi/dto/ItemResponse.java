@@ -12,7 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class ItemResponse {
-    private Integer id;
-    private Integer productId;
-    private Integer quantity;
+	private Integer id;
+	private Integer productId;
+	private Integer quantity;
 }

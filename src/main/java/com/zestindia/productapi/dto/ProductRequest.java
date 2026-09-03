@@ -13,7 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ProductRequest {
 
-    @NotBlank(message = "productName must not be blank")
-    @Size(max = 255, message = "productName must be at most 255 characters")
-    private String productName;
+	@NotBlank(message = "productName must not be blank")
+	@Size(max = 255, message = "productName must be at most 255 characters")
+	private String productName;
 }
