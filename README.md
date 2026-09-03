@@ -216,9 +216,3 @@ All config is environment-variable driven (see `application.yml`):
 | `JWT_ACCESS_EXPIRATION_MS` | `900000` (15 min) | Access token TTL |
 | `JWT_REFRESH_EXPIRATION_MS` | `604800000` (7 days) | Refresh token TTL |
 
-## Notes / Assumptions
-
-- HTTPS enforcement is left to the deployment layer (reverse proxy / load balancer / ingress), which is the standard place to terminate TLS for a containerized Spring Boot service — the app itself is protocol-agnostic.
-- `RefreshTokenRepository.deleteByUser()` uses an explicit `@Modifying @Query` (rather than a derived delete method) so the old refresh token row is actually removed from the database before the new one is inserted — required because `user_id` on `refresh_token` has a unique constraint, and Hibernate's default flush ordering runs INSERTs before DELETEs otherwise.
-- This build was assembled and reviewed without a live Maven Central connection in the authoring sandbox; run `mvn clean verify` before pushing to catch any dependency-resolution issues in your own environment.
-
