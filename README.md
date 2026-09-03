@@ -1,24 +1,23 @@
 # Product API
 
-RESTful CRUD API around **Products** (and nested **Items**) built with Java 17 and Spring Boot, per the Zest India IT Services backend assignment (sections 1–8: problem statement, tech stack, API design, endpoints, DB schema, security, testing).
-
+RESTful CRUD API around **Products** (and nested **Items**) built with Java 17 and Spring Boot.
 ## Tech Stack
 
 | Concern | Choice |
 |---|---|
-| Language / Runtime | Java 17+ (tested on 21) |
+| Language / Runtime | Java 17+  |
 | Framework | Spring Boot 3.3 |
-| Persistence | Spring Data JPA (Hibernate), MySQL (Postgres also supported via config) |
+| Persistence | Spring Data JPA (Hibernate), MySQL |
 | Security | Spring Security, JWT access tokens + rotating refresh tokens |
 | Docs | springdoc-openapi (Swagger UI) |
-| Testing | JUnit 5, Mockito, Spring Boot Test, H2 (in-memory) |
+| Testing | JUnit 5, Mockito, Spring Boot Test, H2 |
 | Containerization | Docker, Docker Compose |
 
 ## Architecture
 
 ```
 controller/   → REST endpoints, request/response mapping, HTTP status codes
-service/      → business logic, transactions, orchestration (interface + impl)
+service/      → business logic, transactions, orchestration 
 repository/   → Spring Data JPA repositories
 entity/       → JPA entities (Product, Item, User, RefreshToken)
 dto/          → request/response payloads (never expose entities directly)
@@ -29,7 +28,7 @@ exception/    → custom exceptions + @RestControllerAdvice global handler
 
 - **Layered architecture**: controllers depend on service interfaces, not implementations, so services are trivially mockable in unit tests.
 - **DTOs at the boundary**: entities are never serialized directly, keeping the API contract stable and independent of the DB schema.
-- **Global exception handling**: all errors (validation, not-found, auth, unexpected) are mapped to a consistent `ErrorResponse` JSON shape via `GlobalExceptionHandler`.
+- **Global exception handling**: all errors  are mapped to a consistent `ErrorResponse` JSON shape via `GlobalExceptionHandler`.
 - **Stateless auth**: JWT access tokens (15 min default) + rotating opaque refresh tokens (7 days default) stored server-side, so a refresh token can be invalidated/rotated on every use.
 - **Async**: audit logging of product create/update/delete runs on a dedicated `@Async` executor so it never blocks the request thread (see `AsyncConfig` / `AuditLogService`).
 
@@ -37,6 +36,7 @@ exception/    → custom exceptions + @RestControllerAdvice global handler
 
 | Method | Path | Auth |
 |---|---|---|
+| POST | `/api/v1/auth/register` | public |
 | POST | `/api/v1/auth/login` | public |
 | POST | `/api/v1/auth/refresh` | public |
 | GET | `/api/v1/products` | ADMIN or USER |
@@ -47,19 +47,6 @@ exception/    → custom exceptions + @RestControllerAdvice global handler
 | GET | `/api/v1/products/{id}/items` | ADMIN or USER |
 | POST | `/api/v1/products/{id}/items` | ADMIN |
 
-All collection endpoints (`GET /products`, `GET /products/{id}/items`) support `?page=&size=` pagination, and `/products` additionally supports `?search=` (case-insensitive product name match).
-
-Errors follow a standardized shape:
-```json
-{
-  "timestamp": "2026-09-01T10:00:00",
-  "status": 404,
-  "error": "Not Found",
-  "message": "Product not found with id: 42",
-  "path": "/api/v1/products/42",
-  "details": null
-}
-```
 
 ## Database Schema
 
