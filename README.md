@@ -78,7 +78,7 @@ Then extract it and import on **Eclipse IDE** as **Exiting Maven Project**.
 
 ## Running Locally
 
-### Option A — Docker Compose (recommended)
+### Option A — Docker Compose
 ```bash
 docker compose up --build
 ```
