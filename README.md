@@ -1,6 +1,7 @@
 # Product API
 
-RESTful CRUD API around **Products** (and nested **Items**) built with Java 17 and Spring Boot.
+RESTful CRUD API around **Products**  built with Java 17 and Spring Boot.
+
 ## Tech Stack
 
 | Concern | Choice |
